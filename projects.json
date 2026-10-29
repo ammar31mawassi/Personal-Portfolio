@@ -1,13 +1,20 @@
 {
   "curated": [
+    "chess-AI",
+    "Concurrent-Robotics-Framework",
+    "Compiler-Project",
     "ai-job-tracker",
     "CodingGame",
-    "Compiler-Project",
     "STOMP-Emergency-Service-System",
-    "Concurrent-Robotics-Framework",
+    "dalili-your-academic-guide",
     "SPLand",
-    "ComputerGraphics_Assignment3",
-    "dalili-your-academic-guide"
+    "repo-health-analyzer"
   ],
-  "excludeFromActivity": ["ammar31mawassi", "Personal-Portfolio"]
+  "excludeFromActivity": [
+    "ammar31mawassi",
+    "Personal-Portfolio"
+  ],
+  "descriptionOverrides": {
+    "chess-AI": "An educational chess AI combining classical search, a policy-value neural network, supervised training, and controlled evaluation."
+  }
 }

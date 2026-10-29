@@ -1,127 +1,52 @@
-<!-- bettergithub:generated-readme -->
-# Personal Portfolio
+# Ammar Mawassi — Personal Portfolio
 
-Personal Portfolio is a static website that presents Ammar Mawassi's projects, screenshots, and engineering interests in a recruiter-friendly format. It helps reviewers move from a GitHub profile to concrete proof points by linking portfolio sections to project images, implementation notes, and the repos that demonstrate web, AI, Java, and systems work.
+An editorial portfolio for a Computer Science student exploring software by building it.
 
-## Tech Stack
+[Live portfolio](https://ammar31mawassi.github.io/Personal-Portfolio/)
 
-- HTML
-- CSS
-- Static site
-- Responsive layout
-- GitHub Actions
+## Design and content
 
-## Quick Start
+- Warm paper, black typography, and a red accent, based on the selected Software Editorial concept.
+- Exactly three featured projects with wide conceptual covers: Chess AI, Concurrent Robotics, and Scheme Compiler.
+- Six compact project cards, a personal introduction, tutoring, contact links, and recent public GitHub activity.
+- Local Anton font with its OFL license in `assets/fonts/`; system sans-serif body text.
+- Responsive layouts, a keyboard skip link, visible focus styles, image alt text, and reduced-motion support.
 
-```bash
-Open index.html in a browser.
-Use a local static server if browser security blocks asset loading.
-Review assets/ for project screenshots used by the page.
-```
+The featured images are generated editorial concept covers. They are not application screenshots or photographs of hardware built for these projects.
 
-## Usage
+## Local preview
 
-- Open the portfolio landing page.
-- Check each project card against its linked repo or asset.
-- Use the docs as the reviewer map for updating screenshots and project copy.
-
-## Environment Variables
-
-No .env file, API key, package install, or backend service is required.
-
-## Demo and Screenshots
-
-![Personal Portfolio repo walkthrough](docs/repo-health-overview.svg)
-
-The diagram above is a lightweight walkthrough image for GitHub reviewers. It shows the reviewer path, the implementation areas to inspect, and the evidence this repository provides. For non-web course projects, this replaces a live demo with reproducible local setup and manual verification notes.
-
-## Testing and Quality
-
-Testing is documented even when the original assignment uses manual verification instead of a full automated suite.
-
-```bash
-Manual test: open index.html, verify images load, and check links at desktop and mobile widths.
-```
-
-See [docs/test-plan.md](docs/test-plan.md) for the manual or automated checks that should be used before presenting this repository.
-
-## Repository Structure
-
-- `index.html`
-- `assets`
-- `docs`
-
-## Architecture Notes
-
-This is a static portfolio: one HTML entry point, local image assets, and documentation that explains how project evidence should be maintained.
-
-See [docs/architecture.md](docs/architecture.md) for a more detailed reviewer map.
-
-## Recruiter Notes
-
-- The README opens with the project purpose, audience, and result so the repository is scannable.
-- Setup, environment, usage, testing, and architecture notes are collected in predictable sections.
-- Existing source code was not changed by the documentation polish pass.
-
-## Roadmap
-
-- Add a short result screenshot or terminal capture after the project is rerun locally.
-- Add one small automated smoke test if the course/tooling environment makes it practical.
-- Keep the README aligned with the latest verified run command.
-
-## Existing Project Notes
-
-# Ammar Mawassi Portfolio
-
-Personal GitHub Pages portfolio for Ammar Mawassi.
-
-## Highlights
-
-- Static HTML/CSS/JS site with no build step.
-- Clean modern layout with scroll reveals, hover motion, and responsive sections.
-- Career-safe content based on Ammar's public software-engineering profile.
-- Designed for `https://ammar31mawassi.github.io/`.
-
-## Local Preview
-
-```powershell
-python -m http.server 4177 --bind 127.0.0.1
-```
-
-Then open `http://127.0.0.1:4177/`.
-
-
-
-## GitHub synchronization and deployment
-
-GitHub Pages is deployed by `.github/workflows/deploy.yml` on pushes to `main`,
-manual workflow runs, and an hourly schedule at minute 17 UTC. GitHub may delay
-scheduled runs and disable schedules in public repositories after 60 days without
-repository activity; re-enable the workflow in Actions if that happens.
-
-The build fetches public GitHub repository descriptions, languages, canonical
-repository links, and last-push timestamps. The page keeps the hand-picked project
-order and detailed case studies; it also shows the three most recently pushed
-public projects. It excludes forks, archived repositories, the profile README,
-and this portfolio from the recent-activity section.
-
-To change featured projects, edit the cards in `index.html` and the curated names
-in `projects.json`. Biography, project screenshots, teaching experience, and
-case-study details are editorial content and are not rewritten from GitHub.
-
-Local preview with synchronized data:
+Python 3 is the only build dependency. JavaScript has no package dependencies.
 
 ```powershell
 python scripts/build.py
-python -m http.server 4178 --directory _site --bind 127.0.0.1
+python -m http.server 4182 --directory _site --bind 127.0.0.1
 ```
 
-`GITHUB_TOKEN` is optional locally and used only in the build process for API
-requests. The published snapshot contains a selected set of public repository
-fields, and visitors fetch it from this site rather than calling GitHub's API.
-A failed data build prevents deployment, preserving the previous working site.
-The static project cards remain usable if the snapshot cannot load in a browser.
+Open `http://127.0.0.1:4182/`.
 
-Committing to another repository does not directly trigger this repository's
-workflow. The hourly refresh picks those changes up; use **Actions → Sync GitHub
-and deploy portfolio → Run workflow** for an immediate refresh.
+```powershell
+python -m unittest discover -s scripts -p 'test_*.py'
+node --check assets/github-sync.js
+```
+
+## GitHub synchronization
+
+`.github/workflows/deploy.yml` builds and deploys through GitHub Pages on pushes to `main`, manual workflow runs, and hourly at minute 17 UTC. Commits to other repositories appear on the next refresh, not immediately. GitHub may delay schedules and may disable scheduled workflows in public repositories after 60 days without activity. Re-enable the workflow in Actions if needed.
+
+The build creates `_site/assets/github-data.json` with selected public fields. Visitors load that local snapshot rather than calling GitHub. Build failures preserve the last deployed site; the complete curated HTML remains usable if the snapshot cannot load.
+
+Edit `index.html` to choose projects, order, labels, and imagery. Keep matching repository names in `projects.json` and `data-repo` attributes. Descriptions, detected languages, repository URLs, and last-push dates refresh automatically. `descriptionOverrides` supports editorial corrections when repository metadata differs from the current implementation; Chess AI uses its verified supervised-training scope rather than claiming PUCT or self-play.
+
+Biography, learning notes, and cover images stay editorial. `excludeFromActivity` controls exclusions from the three recent public repositories. Forks and archived repositories are excluded from recent activity.
+
+`GITHUB_TOKEN` is optional locally and used only during builds. No token is published.
+
+## Main files
+
+- `index.html`: semantic page and curated content.
+- `assets/portfolio.css`: visual system and responsive layouts.
+- `assets/github-sync.js`: snapshot rendering and static fallback.
+- `scripts/build.py`: public GitHub data collection and static build.
+- `projects.json`: repository selection and editorial overrides.
+- `design-qa.md`: design comparison and verification results.

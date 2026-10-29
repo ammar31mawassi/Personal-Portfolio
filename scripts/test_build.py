@@ -28,7 +28,7 @@ class GitHubBuildTests(unittest.TestCase):
             root = Path(temporary)
             (root / "assets").mkdir()
             (root / "index.html").write_text("<h1>Curated</h1>")
-            (root / "projects.json").write_text(json.dumps({"curated": ["second", "first"], "excludeFromActivity": ["profile"]}))
+            (root / "projects.json").write_text(json.dumps({"curated": ["second", "first"], "excludeFromActivity": ["profile"], "descriptionOverrides": {"first": "Verified scope"}}))
             repos = [repository("first", secret_field="must not publish"), repository("second"),
                      repository("profile"), repository("fork", fork=True), repository("old", archived=True)]
             with patch.object(build, "ROOT", root), patch.object(build, "public_repositories", return_value=repos), patch.object(build, "github", return_value={"Python": 50, "C": 100}):
@@ -37,6 +37,8 @@ class GitHubBuildTests(unittest.TestCase):
             data = json.loads(text)
             self.assertEqual(["second", "first"], [r["name"] for r in data["repositories"]])
             self.assertEqual(["C", "Python"], data["repositories"][0]["languages"])
+            self.assertEqual("Verified scope", data["repositories"][1]["description"])
+            self.assertEqual("Verified scope", next(r for r in data["recent"] if r["name"] == "first")["description"])
             self.assertEqual({"first", "second"}, {r["name"] for r in data["recent"]})
             self.assertNotIn("must not publish", text)
             self.assertEqual("<h1>Curated</h1>", (root / "_site/index.html").read_text())

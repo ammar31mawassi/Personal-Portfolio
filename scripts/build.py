@@ -44,7 +44,7 @@ def build():
         curated.append({
             "name": name,
             "url": f"https://github.com/{USERNAME}/{name}",
-            "description": repo["description"],
+            "description": config.get("descriptionOverrides", {}).get(name, repo["description"]),
             "languages": sorted(languages, key=languages.get, reverse=True)[:3],
             "pushedAt": repo["pushed_at"],
         })
@@ -58,7 +58,7 @@ def build():
         "repositories": curated,
         "recent": [{
             "name": repo["name"], "url": f"https://github.com/{USERNAME}/{repo['name']}",
-            "description": repo["description"], "pushedAt": repo["pushed_at"],
+            "description": config.get("descriptionOverrides", {}).get(repo["name"], repo["description"]), "pushedAt": repo["pushed_at"],
         } for repo in recent],
     }
     output = ROOT / "_site"

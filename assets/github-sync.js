@@ -1,70 +1,57 @@
 (() => {
-  const snapshotUrl = new URL("github-data.json", document.currentScript.src);
-  const date = (value) => new Intl.DateTimeFormat("en", {
-    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  const snapshotUrl = new URL('github-data.json', document.currentScript.src);
+  const formatDate = (value) => new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
   }).format(new Date(value));
-
-  function metadata(repo) {
-    const paragraph = document.createElement("p");
-    paragraph.className = "github-meta";
-    paragraph.textContent = repo.languages.join(" · ");
-    if (repo.pushedAt) {
-      const time = document.createElement("time");
-      time.dateTime = repo.pushedAt;
-      time.textContent = `Last push ${date(repo.pushedAt)}`;
-      if (paragraph.textContent) paragraph.append(" · ");
-      paragraph.append(time);
-    }
-    return paragraph;
-  }
-
+  const validUrl = (value) => {
+    const url = new URL(value);
+    return url.origin === 'https://github.com' && /^\/ammar31mawassi\/[^/]+$/.test(url.pathname);
+  };
   async function refresh() {
-    const response = await fetch(snapshotUrl, { cache: "no-cache" });
-    if (!response.ok) throw new Error("GitHub snapshot unavailable");
+    const response = await fetch(snapshotUrl, { cache: 'no-cache' });
+    if (!response.ok) throw new Error('GitHub snapshot unavailable; showing curated project information.');
     const data = await response.json();
-    for (const card of document.querySelectorAll(".repo-card, details.project-feature")) {
-      const link = card.querySelector('a[href^="https://github.com/ammar31mawassi/"]');
-      const repo = data.repositories.find((item) => item.url === link?.href.replace(/\/$/, ""));
-      if (!repo) continue;
-      const description = card.querySelector("summary p") || card.querySelector("div > p");
+    for (const card of document.querySelectorAll('[data-repo]')) {
+      const repo = data.repositories.find((item) => item.name === card.dataset.repo);
+      if (!repo || !validUrl(repo.url)) continue;
+      const description = card.querySelector('.repo-description');
       if (description && repo.description) description.textContent = repo.description;
-      link.href = repo.url;
-      const target = card.querySelector("summary > div") || card.querySelector("div");
-      target.append(metadata(repo));
+      card.querySelector('.repo-link').href = repo.url;
+      const meta = card.querySelector('[data-github-meta]');
+      meta.replaceChildren();
+      if (repo.languages.length) meta.append(repo.languages.join(' / '));
+      if (repo.pushedAt) {
+        const time = document.createElement('time');
+        time.setAttribute('datetime', repo.pushedAt);
+        time.textContent = `Updated ${formatDate(repo.pushedAt)}`;
+        if (meta.textContent) meta.append(' · ');
+        meta.append(time);
+      }
     }
-
-    const section = document.createElement("section");
-    section.id = "github-activity";
-    const heading = document.createElement("div");
-    heading.className = "section-heading";
-    const title = document.createElement("h2");
-    title.textContent = "Latest on GitHub";
-    const note = document.createElement("p");
-    note.textContent = `Recent pushes to public repositories. Synced ${date(data.generatedAt)}; refreshed hourly.`;
-    heading.append(title, note);
-    const grid = document.createElement("div");
-    grid.className = "projects-grid";
+    const list = document.querySelector('#activity-list');
     for (const repo of data.recent) {
-      const card = document.createElement("article");
-      card.className = "repo-card";
-      const content = document.createElement("div");
-      const name = document.createElement("h3");
-      name.textContent = repo.name;
-      const description = document.createElement("p");
-      description.textContent = repo.description || "Explore this project on GitHub.";
-      content.append(name, description, metadata({ ...repo, languages: [] }));
-      const link = document.createElement("a");
-      link.className = "repo-link";
+      if (!validUrl(repo.url)) continue;
+      const row = document.createElement('article');
+      row.className = 'activity-row';
+      const heading = document.createElement('h3');
+      const link = document.createElement('a');
       link.href = `${repo.url}/commits`;
-      link.textContent = "View commits";
-      link.setAttribute("aria-label", `View commits for ${repo.name}`);
-      card.append(content, link);
-      grid.append(card);
+      link.textContent = repo.name;
+      link.setAttribute('aria-label', `View recent commits for ${repo.name}`);
+      heading.append(link);
+      const description = document.createElement('p');
+      description.textContent = repo.description || 'Explore the latest work on GitHub.';
+      const time = document.createElement('time');
+      time.setAttribute('datetime', repo.pushedAt);
+      time.textContent = formatDate(repo.pushedAt);
+      row.append(heading, description, time);
+      list.append(row);
     }
-    section.append(heading, grid);
-    document.querySelector("#contact").before(section);
+    const status = document.querySelector('#sync-status');
+    status.textContent = `Public activity · synced ${formatDate(data.generatedAt)}`;
+    status.title = 'Refreshed hourly from GitHub. Scheduled runs may be delayed.';
+    document.querySelector('#github-activity').hidden = !list.children.length;
   }
-
-  // The original, curated HTML stays usable if the snapshot cannot be loaded.
+  // HTML contains the full project list even when the data request fails.
   refresh().catch((error) => console.warn(error.message));
 })();
