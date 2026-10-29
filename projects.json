@@ -1,0 +1,13 @@
+{
+  "curated": [
+    "ai-job-tracker",
+    "CodingGame",
+    "Compiler-Project",
+    "STOMP-Emergency-Service-System",
+    "Concurrent-Robotics-Framework",
+    "SPLand",
+    "ComputerGraphics_Assignment3",
+    "dalili-your-academic-guide"
+  ],
+  "excludeFromActivity": ["ammar31mawassi", "Personal-Portfolio"]
+}

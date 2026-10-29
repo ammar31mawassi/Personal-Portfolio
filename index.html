@@ -976,6 +976,8 @@
         height: 170px;
       }
     }
+    .github-meta { color: var(--muted); font-size: 0.82rem; margin-top: 0.8rem; }
+    #github-activity .repo-card { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -1315,5 +1317,6 @@
       revealItems.forEach((item) => observer.observe(item));
     }
   </script>
+  <script src="assets/github-sync.js" defer></script>
 </body>
 </html>

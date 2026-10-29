@@ -90,3 +90,38 @@ python -m http.server 4177 --bind 127.0.0.1
 
 Then open `http://127.0.0.1:4177/`.
 
+
+
+## GitHub synchronization and deployment
+
+GitHub Pages is deployed by `.github/workflows/deploy.yml` on pushes to `main`,
+manual workflow runs, and an hourly schedule at minute 17 UTC. GitHub may delay
+scheduled runs and disable schedules in public repositories after 60 days without
+repository activity; re-enable the workflow in Actions if that happens.
+
+The build fetches public GitHub repository descriptions, languages, canonical
+repository links, and last-push timestamps. The page keeps the hand-picked project
+order and detailed case studies; it also shows the three most recently pushed
+public projects. It excludes forks, archived repositories, the profile README,
+and this portfolio from the recent-activity section.
+
+To change featured projects, edit the cards in `index.html` and the curated names
+in `projects.json`. Biography, project screenshots, teaching experience, and
+case-study details are editorial content and are not rewritten from GitHub.
+
+Local preview with synchronized data:
+
+```powershell
+python scripts/build.py
+python -m http.server 4178 --directory _site --bind 127.0.0.1
+```
+
+`GITHUB_TOKEN` is optional locally and used only in the build process for API
+requests. The published snapshot contains a selected set of public repository
+fields, and visitors fetch it from this site rather than calling GitHub's API.
+A failed data build prevents deployment, preserving the previous working site.
+The static project cards remain usable if the snapshot cannot load in a browser.
+
+Committing to another repository does not directly trigger this repository's
+workflow. The hourly refresh picks those changes up; use **Actions → Sync GitHub
+and deploy portfolio → Run workflow** for an immediate refresh.
